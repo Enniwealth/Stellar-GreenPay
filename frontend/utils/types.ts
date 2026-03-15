@@ -1,0 +1,84 @@
+/**
+ * utils/types.ts
+ * Shared TypeScript types for Stellar GreenPay.
+ */
+
+export type ProjectCategory =
+  | "Reforestation"
+  | "Solar Energy"
+  | "Ocean Conservation"
+  | "Clean Water"
+  | "Wildlife Protection"
+  | "Carbon Capture"
+  | "Wind Energy"
+  | "Sustainable Agriculture"
+  | "Other";
+
+export type ProjectStatus = "active" | "completed" | "paused";
+
+export interface ClimateProject {
+  id: string;
+  name: string;
+  description: string;
+  category: ProjectCategory;
+  location: string;
+  imageUrl?: string;
+  walletAddress: string;       // Stellar address that receives donations
+  goalXLM: string;             // fundraising goal
+  raisedXLM: string;           // total raised so far
+  donorCount: number;
+  co2OffsetKg: number;         // estimated CO2 offset in kg
+  status: ProjectStatus;
+  verified: boolean;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Donation {
+  id: string;
+  projectId: string;
+  donorAddress: string;
+  amountXLM: string;
+  message?: string;
+  transactionHash: string;
+  createdAt: string;
+  // On-chain contract data
+  contractRecordId?: string;
+}
+
+export interface DonorProfile {
+  publicKey: string;
+  displayName?: string;
+  bio?: string;
+  totalDonatedXLM: string;
+  projectsSupported: number;
+  badges: DonorBadge[];
+  createdAt: string;
+}
+
+export type BadgeTier = "seedling" | "tree" | "forest" | "earth";
+
+export interface DonorBadge {
+  tier: BadgeTier;
+  earnedAt: string;
+  projectId?: string;
+}
+
+export interface ProjectUpdate {
+  id: string;
+  projectId: string;
+  title: string;
+  body: string;
+  imageUrl?: string;
+  createdAt: string;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  publicKey: string;
+  displayName?: string;
+  totalDonatedXLM: string;
+  projectsSupported: number;
+  topBadge?: BadgeTier;
+}
