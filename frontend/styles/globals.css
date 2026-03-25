@@ -116,6 +116,28 @@
   .divider {
     @apply border-t border-[rgba(34,114,57,0.08)] my-6;
   }
+
+  /* Tooltip Styles */
+  .tooltip {
+    @apply relative inline-flex items-center cursor-help;
+  }
+
+  .tooltip-text {
+    @apply invisible absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-56
+           bg-forest-900 text-white text-[11px] leading-snug p-2.5 rounded-xl shadow-xl
+           opacity-0 transition-all duration-200 pointer-events-none font-body text-center
+           border border-forest-800/50 backdrop-blur-sm;
+  }
+
+  .tooltip:hover .tooltip-text,
+  .tooltip:focus-within .tooltip-text {
+    @apply visible opacity-100 translate-y-0;
+  }
+
+  .tooltip-text::after {
+    content: "";
+    @apply absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-forest-900;
+  }
 }
 
 @layer utilities {

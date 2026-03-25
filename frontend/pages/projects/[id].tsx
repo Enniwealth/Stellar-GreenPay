@@ -104,7 +104,23 @@ export default function ProjectDetail({ publicKey, onConnect }: ProjectDetailPro
               ].map(s => (
                 <div key={s.label} className="stat-card text-center">
                   <p className="text-lg mb-1">{s.icon}</p>
-                  <p className="font-semibold text-forest-900 text-sm font-body">{s.value}</p>
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <p className="font-semibold text-forest-900 text-sm font-body">{s.value}</p>
+                    {s.label === "CO₂ Offset" && (
+                      <span className="tooltip" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
+                        <button
+                          type="button"
+                          className="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-forest-100 text-[8px] text-forest-600 border border-forest-200 hover:bg-forest-200 transition-colors focus:outline-none focus:ring-1 focus:ring-forest-400"
+                          aria-label="CO2 offset estimate methodology info"
+                        >
+                          ℹ️
+                        </button>
+                        <span className="tooltip-text" role="tooltip">
+                          Estimated CO₂ offset based on this project's declared impact rate per XLM donated. Actual results may vary.
+                        </span>
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-[#8aaa8a] font-body">{s.label}</p>
                 </div>
               ))}
