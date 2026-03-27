@@ -18,9 +18,9 @@ export default function ProjectDetail({ publicKey, onConnect }: ProjectDetailPro
   const router = useRouter();
   const { id } = router.query;
 
-  const [project,   setProject]   = useState<ClimateProject | null>(null);
-  const [updates,   setUpdates]   = useState<ProjectUpdate[]>([]);
-  const [loading,   setLoading]   = useState(true);
+  const [project, setProject] = useState<ClimateProject | null>(null);
+  const [updates, setUpdates] = useState<ProjectUpdate[]>([]);
+  const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
   const [shareState, setShareState] = useState<'idle' | 'copied'>('idle');
@@ -75,9 +75,9 @@ export default function ProjectDetail({ publicKey, onConnect }: ProjectDetailPro
 
   if (loading || !project) return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 animate-pulse">
-      <div className="h-8 bg-forest-200 rounded w-2/3 mb-4"/>
+      <div className="h-8 bg-forest-200 rounded w-2/3 mb-4" />
       <div className="card space-y-4">
-        {[1,2,3].map(i=><div key={i} className="h-4 bg-forest-100 rounded"/>)}
+        {[1, 2, 3].map(i => <div key={i} className="h-4 bg-forest-100 rounded" />)}
       </div>
     </div>
   );
@@ -199,7 +199,7 @@ export default function ProjectDetail({ publicKey, onConnect }: ProjectDetailPro
               <span>Project wallet:</span>
               <a href={accountUrl(project.walletAddress)} target="_blank" rel="noopener noreferrer"
                 className="address-tag hover:border-forest-300 transition-colors">
-                {project.walletAddress.slice(0,8)}...{project.walletAddress.slice(-6)} ↗
+                {project.walletAddress.slice(0, 8)}...{project.walletAddress.slice(-6)} ↗
               </a>
               <button
                 onClick={handleCopyWallet}
@@ -294,6 +294,12 @@ export default function ProjectDetail({ publicKey, onConnect }: ProjectDetailPro
               className="btn-secondary text-sm py-2 px-4 w-full">
               Copy Project Link
             </button>
+            <Link
+              href={`/donate/${project.id}`}
+              className="btn-secondary text-sm py-2 px-4 w-full mt-2 inline-flex items-center justify-center gap-2"
+            >
+              📱 Generate Donation QR
+            </Link>
           </div>
         </div>
       </div>

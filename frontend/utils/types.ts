@@ -86,3 +86,20 @@ export interface LeaderboardEntry {
   projectsSupported: number;
   topBadge?: BadgeTier;
 }
+
+export interface DonateProject {
+  id: string;
+  name: string;
+  description: string;
+  category: ProjectCategory;
+  walletAddress: string;
+  goalXLM: number;
+  raisedXLM: number;
+}
+
+
+export interface DonatePageProps {
+  
+  project: DonateProject | null;
+  presetAmount: number | null;
+}
