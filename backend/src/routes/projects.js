@@ -2,20 +2,48 @@
  * src/routes/projects.js
  */
 "use strict";
-const express  = require("express");
-const router   = express.Router();
+const express = require("express");
+const router = express.Router();
 const { projects } = require("../services/store");
 
-const VALID_STATUSES    = ["active","completed","paused"];
-const VALID_CATEGORIES  = ["Reforestation","Solar Energy","Ocean Conservation","Clean Water","Wildlife Protection","Carbon Capture","Wind Energy","Sustainable Agriculture","Other"];
+const VALID_STATUSES = ["active", "completed", "paused"];
+const VALID_CATEGORIES = [
+  "Reforestation",
+  "Solar Energy",
+  "Ocean Conservation",
+  "Clean Water",
+  "Wildlife Protection",
+  "Carbon Capture",
+  "Wind Energy",
+  "Sustainable Agriculture",
+  "Other",
+];
 
 router.get("/", (req, res) => {
-  const { category, status, verified, limit = 50 } = req.query;
+  const { category, status, verified, search, limit = 50 } = req.query;
   let result = Array.from(projects.values());
-  if (status && VALID_STATUSES.includes(status))     result = result.filter(p => p.status === status);
-  if (category && VALID_CATEGORIES.includes(category)) result = result.filter(p => p.category === category);
-  if (verified === "true") result = result.filter(p => p.verified === true);
-  result = result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, Math.min(parseInt(limit) || 50, 100));
+  if (status && VALID_STATUSES.includes(status))
+    result = result.filter((p) => p.status === status);
+  if (category && VALID_CATEGORIES.includes(category))
+    result = result.filter((p) => p.category === category);
+  if (verified === "true") result = result.filter((p) => p.verified === true);
+
+  // Apply search filter if provided
+  if (search && typeof search === "string") {
+    const searchLower = search.toLowerCase();
+    result = result.filter(
+      (p) =>
+        p.name.toLowerCase().includes(searchLower) ||
+        p.description.toLowerCase().includes(searchLower) ||
+        p.location.toLowerCase().includes(searchLower) ||
+        (p.tags &&
+          p.tags.some((tag) => tag.toLowerCase().includes(searchLower))),
+    );
+  }
+
+  result = result
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, Math.min(parseInt(limit) || 50, 100));
   res.json({ success: true, data: result });
 });
 
