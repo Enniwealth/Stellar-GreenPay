@@ -5,6 +5,8 @@ import Link from "next/link";
 import DonationQRCode, { DonationQRCodeHandle } from "../../components/DonationQRCode";
 import type { DonateProject, DonatePageProps } from "../../utils/types";
 
+//Category icons (matches the live site's category set)//
+
 const CATEGORY_ICONS: Record<string, string> = {
   Reforestation: "🌳",
   "Solar Energy": "☀️",
@@ -21,10 +23,10 @@ function categoryIcon(category: string): string {
   return CATEGORY_ICONS[category] ?? "🌱";
 }
 
-
+//  SEP-0007 URI builder //
 
 function buildStellarUri(project: DonateProject, presetAmount: number | null): string {
-
+  // Base: web+stellar:pay?destination=<address>&memo=GreenPay:<name>
   const params = new URLSearchParams();
   params.set("destination", project.walletAddress);
   params.set("memo", `GreenPay:${project.name}`);
@@ -32,8 +34,11 @@ function buildStellarUri(project: DonateProject, presetAmount: number | null): s
   if (presetAmount && presetAmount > 0) {
     params.set("amount", String(presetAmount));
   }
+  // SEP-0007 uses "web+stellar:pay?" (no double-encoding)
   return `web+stellar:pay?${params.toString()}`;
 }
+
+// Progress bar //
 
 function GoalProgress({ raised, goal }: { raised: number; goal: number }) {
   const pct = goal > 0 ? Math.min(100, Math.round((raised / goal) * 100)) : 0;
@@ -49,6 +54,8 @@ function GoalProgress({ raised, goal }: { raised: number; goal: number }) {
     </div>
   );
 }
+
+//Page //
 
 const DonatePage: NextPage<DonatePageProps> = ({ project, presetAmount }) => {
   const qrRef = useRef<DonationQRCodeHandle>(null);
@@ -322,6 +329,7 @@ const DonatePage: NextPage<DonatePageProps> = ({ project, presetAmount }) => {
           font-family: system-ui, sans-serif;
         }
 
+        //Print styles //
         @media print {
           body {
             background: #fff !important;
@@ -375,11 +383,11 @@ const DonatePage: NextPage<DonatePageProps> = ({ project, presetAmount }) => {
           <Link href={`/projects/${project.id}`}>← Back to project</Link>
           <Link href="/projects">Browse all projects</Link>
         </nav>
-
         <div className="donate-card">
           <div className="donate-card__badge">🌱 Climate Donation</div>
           <div className="donate-card__icon">{icon}</div>
           <p className="donate-card__category">{project.category}</p>
+
           <h1 className="donate-card__title">{project.name}</h1>
           <GoalProgress raised={project.raisedXLM} goal={project.goalXLM} />
           {presetAmount && presetAmount > 0 && (
@@ -398,6 +406,7 @@ const DonatePage: NextPage<DonatePageProps> = ({ project, presetAmount }) => {
             />
           </div>
 
+          {/* Instruction */}
           <p className="donate-card__instruction">
             <strong>Scan to donate with Freighter</strong>
             <br />
@@ -438,9 +447,10 @@ const DonatePage: NextPage<DonatePageProps> = ({ project, presetAmount }) => {
   );
 };
 
+//  Data fetching //
 
 export const getServerSideProps: GetServerSideProps<DonatePageProps> = async (ctx) => {
-  const { projectId } = ctx.params as { projectId: string };
+  const { id } = ctx.params as { id: string };
   const amountParam = ctx.query?.amount;
   const presetAmount =
     amountParam && !Array.isArray(amountParam) && Number(amountParam) > 0
@@ -452,7 +462,7 @@ export const getServerSideProps: GetServerSideProps<DonatePageProps> = async (ct
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
   try {
-    const res = await fetch(`${apiBase}/api/projects/${projectId}`);
+    const res = await fetch(`${apiBase}/api/projects/${id}`);
     if (!res.ok) {
       return { props: { project: null, presetAmount } };
     }
@@ -460,13 +470,13 @@ export const getServerSideProps: GetServerSideProps<DonatePageProps> = async (ct
 
     // Normalise API response shape to DonateProject
     const project: DonateProject = {
-      id: data.id ?? projectId,
+      id: data.id ?? id,
       name: data.name ?? data.title ?? "Untitled Project",
       category: data.category ?? "Other",
       walletAddress: data.walletAddress ?? data.wallet_address ?? "",
       goalXLM: Number(data.goalXLM ?? data.goal_xlm ?? 0),
       raisedXLM: Number(data.raisedXLM ?? data.raised_xlm ?? 0),
-      description: data.description,
+      description: data.description ?? null,
     };
 
     return { props: { project, presetAmount } };
